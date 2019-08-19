@@ -13,6 +13,7 @@ library(texreg)
 library(xtable)
 
 projects.active = read_csv("projects_active.csv")
+nrow(projects.active)
 
 projects.active$newcomers_delta = projects.active$newcomers - projects.active$new_newcomers
 projects.active$has_oldnew_contributors = projects.active$newcomers_delta > 0
@@ -37,7 +38,7 @@ projects.active$is_polite = projects.active$pol_50 > as.numeric(quantile(project
 summary(projects.active$resp_50)
 projects.active$is_fast = projects.active$resp_50 < as.numeric(quantile(projects.active$resp_50, na.rm=TRUE)[2]) 
 projects.active$is_slow = projects.active$resp_50 > as.numeric(quantile(projects.active$resp_50, na.rm=TRUE)[4]) 
-
+summary(projects.active$stars)
 
 projects.active$not_slow = projects.active$resp_50 < as.numeric(quantile(projects.active$resp_50, na.rm=TRUE)[4]) 
 projects.active$resp_days = projects.active$resp_50 / 24.0
@@ -113,24 +114,18 @@ m_new = glm(has_newnew_contributors ~
 
 summary(m_new)
 
-vif(m_new)
+vif(m_new) # done without interaction terms
 pR2(m_new)
 anova(m_new)
 
 interplot(m_new, "has_badgesTRUE", "log_recent_commits") +
   xlab("Num recent commits (log)") +
   ylab("Estimated coefficient for\nHas badges") +
-  # Change the background
   theme_bw() +
-  # Add the title
-  #ggtitle("Estimated Coefficient of Engine Cylinders \non Mileage by Automobile Weight") +
-  # theme(plot.title = element_text(face="bold")) +
-  # Add a horizontal line at y = 0
   geom_hline(yintercept = 0, linetype = "dashed")
 
 interplot(m_new, "has_urlTRUE", "log_recent_commits")
 interplot(m_new, "has_contribTRUE", "log_recent_commits")
-# interplot(m_new, "has_templateTRUE", "log_recent_commits")
 
 m_all = glm(has_new_contributors ~
             had_external_committers
@@ -147,23 +142,20 @@ m_all = glm(has_new_contributors ~
             + is_fast
             + log_stars
             + is_impolite
-            + log_recent_commits * has_contrib
-            + log_recent_commits * has_badges
-            + log_recent_commits * has_url
+            #+ log_recent_commits * has_contrib
+            #+ log_recent_commits * has_badges
+            #+ log_recent_commits * has_url
          , family = "binomial"
          , data = ds)
-
+summary(m_all)
+Anova(m_all)
+vif(m_all) # done without interaction terms
 interplot(m_all, "has_badgesTRUE", "log_recent_commits")
 
 interplot(m_all, "has_urlTRUE", "log_recent_commits") +
   xlab("Num recent commits (log)") +
   ylab("Estimated coefficient for\nHas website") +
-  # Change the background
   theme_bw() +
-  # Add the title
-  #ggtitle("Estimated Coefficient of Engine Cylinders \non Mileage by Automobile Weight") +
-  # theme(plot.title = element_text(face="bold")) +
-  # Add a horizontal line at y = 0
   geom_hline(yintercept = 0, linetype = "dashed")
 
 interplot(m_all, "has_contribTRUE", "log_recent_commits") +
@@ -171,14 +163,10 @@ interplot(m_all, "has_contribTRUE", "log_recent_commits") +
   ylab("Estimated coefficient for\nHas contrib") +
   # Change the background
   theme_bw() +
-  # Add the title
-  #ggtitle("Estimated Coefficient of Engine Cylinders \non Mileage by Automobile Weight") +
-  # theme(plot.title = element_text(face="bold")) +
-  # Add a horizontal line at y = 0
   geom_hline(yintercept = 0, linetype = "dashed")
 
-v = as.data.frame(vif(m_new))
-v$new = as.data.frame(vif(m_all))[,1]
+v = as.data.frame(vif(m_all))
+v$new = as.data.frame(vif(m_new))[,1]
 names(v) = c("all", "new")
 names(v)
 v
@@ -206,3 +194,4 @@ makeTexRegCox(mList, file, modelNames, caption, digits=2)
 
 print_Anova_glm(m_all, "anova_model_1.csv")
 print_Anova_glm(m_new, "anova_model_2.csv")
+
