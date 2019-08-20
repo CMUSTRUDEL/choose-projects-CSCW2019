@@ -19,11 +19,7 @@ import json
 from unicodeManager import UnicodeReader, UnicodeWriter
 import hashlib
 
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
 from unidecode import unidecode
-#from travisDB import cleanStart, Base, initDB, repo_decoder
-#from travisDB import TravisRepo, TravisCommit, TravisJob, TravisBuild, GhIssue
 from dateutil import parser
 
 readme_cap = ["README", "Readme", "ReadMe", "readme"]
@@ -32,8 +28,6 @@ readme_all = list()
 for name in readme_cap:
     for ext in readme_ext:
         readme_all.append(name+ext)
-
-# token = tokens[0]
 
 tokens = Tokens()
 tokens_iter = tokens.iterator()
