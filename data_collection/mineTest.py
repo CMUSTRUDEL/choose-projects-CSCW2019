@@ -21,34 +21,14 @@ import numpy as np
 import sys
 import json
 from csv import reader, writer
-# from unicodeManager import UnicodeReader, UnicodeWriter
 import hashlib
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from travisDB import repo_decoder #, Base, initDB cleanStart,
-# from travisDB import TravisRepo #, TravisCommit, TravisJob, TravisBuild, GhIssue
 from dateutil import parser
 
 import random
 import numpy as np
-
-# tokens = Tokens()
-# tokens_iter = tokens.iterator()
-#
-# for token in tokens_iter:
-#     g = Github(token)
-#     try:
-#         repo = g.get_repo("CMUSTRUDEL/cmustrudel.github.io")
-#         print(token)
-#         print('\t' + repo.has_issues)
-#         print('\t' + g.rate_limiting)
-#     except RateLimitExceededException:
-#         print(token)
-#         print('\t' + "API rate limit exceeded")
-#
-# exit()
-
 
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
@@ -60,12 +40,8 @@ class NoDaemonProcess(multiprocessing.Process):
 
     daemon = property(_get_daemon, _set_daemon)
 
-
 class MyPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
-
-
-# token = tokens[0]
 
 tokens = Tokens()
 tokens_iter = tokens.iterator()
@@ -74,10 +50,8 @@ tokens_queue = Queue()
 for token in tokens_iter:
     tokens_queue.put(token)
 
-
 def getRateLimit(g):
     return g.rate_limiting
-
 
 def computeSleepDuration(g):
     reset_time = datetime.datetime.fromtimestamp(g.rate_limiting_resettime)
@@ -87,7 +61,6 @@ def computeSleepDuration(g):
         return delta
     return 60
 
-
 def waitIfDepleted(g):
     (remaining, _limit) = getRateLimit(g)
     sleep_duration = computeSleepDuration(g)
@@ -95,93 +68,9 @@ def waitIfDepleted(g):
         # session.commit()
         sleep(sleep_duration)
 
-
 def waitAndGetRepo(g, slug):
     waitIfDepleted(g)
     return g.get_repo(slug)
-
-
-def parseIssue(g, issue):
-    issue_id = issue.id  # int
-    issue_number = issue.number  # int
-    state = issue.state  # string
-    created_at = str(issue.created_at)  # datetime
-    closed_at = str(issue.closed_at)  # datetime
-    # updated_at
-
-    created_by = issue.user  # NamedUser
-    created_by_login = None
-    #     created_by_name = None
-    #     created_by_email = None
-    if created_by is not None:
-        #         created_by = g.get_user(issue.user.login)
-        created_by_login = created_by.login
-    #         created_by_name = created_by.name
-    #         created_by_email = created_by.email
-
-    closed_by = issue.closed_by  # NamedUser
-    closed_by_login = None
-    #     closed_by_name = None
-    #     closed_by_email = None
-    if closed_by is not None:
-        #         closed_by = g.get_user(issue.closed_by.login) # NamedUser
-        closed_by_login = closed_by.login
-    #         closed_by_name = closed_by.name
-    #         closed_by_email = closed_by.email
-
-    assignee = issue.assignee  # NamedUser
-    assignee_login = None
-    #     assignee_name = None
-    #     assignee_email = None
-    if assignee is not None:
-        #         assignee = g.get_user(issue.assignee.login) # NamedUser
-        assignee_login = assignee.login
-    #         assignee_name = assignee.name
-    #         assignee_email = assignee.email
-
-    title = issue.title.strip().replace("\n", "").replace("\r", "")  # string
-    body = issue.body  # string
-    num_comments = issue.comments  # int
-    # url
-    # comments_url
-    # events_url
-    # html_url
-    labels = ','.join([l.name for l in issue.labels])  # [Label]
-
-    # labels_url =
-    # milestone
-    pull_request = issue.pull_request  # IssuePullRequest
-    pr_html_url = None
-    pr_num = None
-    if pull_request is not None:
-        pr_html_url = pull_request.html_url
-        pr_num = pr_html_url.split('/')[-1]
-    # repository
-
-    issueData = [issue_id,
-                 issue_number,
-                 state,
-                 created_at,
-                 closed_at,
-                 created_by_login,
-                 # created_by_name,
-                 # created_by_email,
-                 closed_by_login,
-                 # closed_by_name,
-                 # closed_by_email,
-                 assignee_login,
-                 # assignee_name,
-                 # assignee_email,
-                 title,
-                 body,
-                 num_comments,
-                 labels,
-                 pr_num]
-
-    waitIfDepleted(g)
-
-    return issueData
-
 
 def parseComment(g, comment):
     comment_id = comment.id  # int
@@ -202,7 +91,6 @@ def parseComment(g, comment):
     waitIfDepleted(g)
 
     return commentData
-
 
 def dec(g, func):
     while True:
@@ -264,7 +152,6 @@ def fetchIssues(rs):
 
     return (repo_id, slug, pid, token, issues, issueComments, None)
 
-
 manager = Manager()
 tokens_map = manager.dict()
 files = manager.dict()
@@ -274,9 +161,8 @@ def initializer():
     token = tokens_queue.get()
     pid = current_process().pid
     tokens_map[pid] = token
-    files[pid] = '/ssd1/lily/comments_try.' + str(pid) + '.csv'
-    proc[pid] = '/ssd1/lily/comments_try.' + str(pid) + '.txt'
-
+    files[pid] = 'comments_try.' + str(pid) + '.csv'
+    proc[pid] = 'comments_try.' + str(pid) + '.txt'
 
 proj = list()
 with open("error_try.csv") as proj_list:

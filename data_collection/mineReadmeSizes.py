@@ -64,12 +64,10 @@ def fetchIssues(slug, g):
     except Exception as e:
         return (slug, None, 0, str(e).strip().replace("\n"," ").replace("\r"," "))
 
-
 def initializer():
     token = tokens_queue.get()
     pid = current_process().pid
     tokens_map[pid] = token
-
 
 output_folder = os.getcwd()
 
@@ -81,7 +79,7 @@ try:
 except Exception as e:
     start = 0
 
-with open('../proj/top10k_projects.csv') as f:
+with open('top10k_projects.csv') as f:
     reader = csv.reader(f)
     lst = list(reader)
     slugs = [item[1] for item in lst]

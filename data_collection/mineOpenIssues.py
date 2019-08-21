@@ -20,31 +20,11 @@ import csv
 import sys
 import json
 from csv import reader, writer
-# from unicodeManager import UnicodeReader, UnicodeWriter
 import hashlib
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from travisDB import repo_decoder #, Base, initDB cleanStart,
-# from travisDB import TravisRepo #, TravisCommit, TravisJob, TravisBuild, GhIssue
 from dateutil import parser
-
-# tokens = Tokens()
-# tokens_iter = tokens.iterator()
-#
-# for token in tokens_iter:
-#     g = Github(token)
-#     try:
-#         repo = g.get_repo("CMUSTRUDEL/cmustrudel.github.io")
-#         print(token)
-#         print('\t' + repo.has_issues)
-#         print('\t' + g.rate_limiting)
-#     except RateLimitExceededException:
-#         print(token)
-#         print('\t' + "API rate limit exceeded")
-#
-# exit()
-
 
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
@@ -56,12 +36,8 @@ class NoDaemonProcess(multiprocessing.Process):
 
     daemon = property(_get_daemon, _set_daemon)
 
-
 class MyPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
-
-
-# token = tokens[0]
 
 tokens = Tokens()
 tokens_iter = tokens.iterator()
@@ -108,33 +84,21 @@ def parseIssue(g, issue):
 
     created_by = issue.user  # NamedUser
     created_by_login = None
-    #     created_by_name = None
-    #     created_by_email = None
     if created_by is not None:
         #         created_by = g.get_user(issue.user.login)
         created_by_login = created_by.login
-    #         created_by_name = created_by.name
-    #         created_by_email = created_by.email
 
     closed_by = issue.closed_by  # NamedUser
     closed_by_login = None
-    #     closed_by_name = None
-    #     closed_by_email = None
     if closed_by is not None:
         #         closed_by = g.get_user(issue.closed_by.login) # NamedUser
         closed_by_login = closed_by.login
-    #         closed_by_name = closed_by.name
-    #         closed_by_email = closed_by.email
 
     assignee = issue.assignee  # NamedUser
     assignee_login = None
-    #     assignee_name = None
-    #     assignee_email = None
     if assignee is not None:
         #         assignee = g.get_user(issue.assignee.login) # NamedUser
         assignee_login = assignee.login
-    #         assignee_name = assignee.name
-    #         assignee_email = assignee.email
 
     title = issue.title.strip().replace("\n", "").replace("\r", "")  # string
     body = issue.body  # string
@@ -161,14 +125,8 @@ def parseIssue(g, issue):
                  created_at,
                  closed_at,
                  created_by_login,
-                 # created_by_name,
-                 # created_by_email,
                  closed_by_login,
-                 # closed_by_name,
-                 # closed_by_email,
                  assignee_login,
-                 # assignee_name,
-                 # assignee_email,
                  title,
                  body,
                  num_comments,
@@ -178,7 +136,6 @@ def parseIssue(g, issue):
     waitIfDepleted(g)
 
     return issueData
-
 
 def parseComment(g, comment):
     comment_id = comment.id  # int
@@ -199,7 +156,6 @@ def parseComment(g, comment):
     waitIfDepleted(g)
 
     return commentData
-
 
 def dec(g, func):
     while True:
@@ -258,15 +214,13 @@ def initializer():
 
 
 proj = list()
-with open("/data2/yucenl/top50k_projects.csv") as proj_list:
+with open("top50k_projects.csv") as proj_list:
     lines = csv.reader(proj_list, delimiter=',')
     for line in lines:
         proj.append((line[0], line[1]))
 list.reverse(proj)
 
 pool = MyPool(processes=tokens.length(), initializer=initializer, initargs=())
-
-# writer = UnicodeWriter(open('issues.csv', 'w'))
 
 logwriter = open('issue_error.csv', 'w')
 

@@ -10,28 +10,7 @@ import os
 import re
 from time import sleep
 import datetime
-
-class Project:
-    def __init__(self, id):
-        self.id = id
-        db = MySQLdb.connect(host="localhost",user="anita",passwd="github",db="ghtorrent")
-        cursor = db.cursor()
-        cursor.execute("select url,language from projects where id=%d"%\
-        self.id)
-        data = cursor.fetchone()
-        if data == None:
-            self.url = ''
-            self.slug = ''
-            self.lang = ''
-        else:
-            self.url = data[0]
-            self.slug = '/'.join(data[0].split('/')[-2:])
-            self.lang = data[1]
-        db.close()
-
-
-    def pprint(self):
-        print 'Project:',self.id,self.lang,self.url
+from myProject import Project
 
 def getRateLimit(g):
     return g.rate_limiting
@@ -52,13 +31,13 @@ for dir in con_dir:
             con_urls.append("https://raw.githubusercontent.com/%s/%s/" + dir + name + ext)
 
 info = list()
-with open("/data2/yucenl/top50k_projects.csv") as top:
+with open("top50k_projects.csv") as top:
     top = csv.reader(top, delimiter=',')
     for line in top:
         info.append((line[0], line[1]))
 
 branch = list()
-with open("/data2/yucenl/default-branch.csv") as branch_list:
+with open("default-branch.csv") as branch_list:
     branch_list = csv.reader(branch_list, delimiter=',')
     for line in branch_list:
         branch.append(line[1])

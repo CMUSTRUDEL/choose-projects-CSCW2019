@@ -7,28 +7,7 @@ import os
 import re
 from time import sleep
 import datetime
-
-class Project:
-    def __init__(self, id):
-        self.id = id
-        db = MySQLdb.connect(host="localhost",user="anita",passwd="github",db="ghtorrent")
-        cursor = db.cursor()
-        cursor.execute("select url,language from projects where id=%d"%\
-        self.id)
-        data = cursor.fetchone()
-        if data == None:
-            self.url = ''
-            self.slug = ''
-            self.lang = ''
-        else:
-            self.url = data[0]
-            self.slug = '/'.join(data[0].split('/')[-2:])
-            self.lang = data[1]
-        db.close()
-
-
-    def pprint(self):
-        print 'Project:',self.id,self.lang,self.url
+from myProjects import Project
 
 tokens = Tokens() 
 
@@ -50,21 +29,21 @@ def canCheckInfo(g):
     return enough
 
 proj = list()
-with open("/data2/yucenl/top50k_projects.csv") as proj_list:
+with open("top50k_projects.csv") as proj_list:
      lines = csv.reader(proj_list, delimiter=',')
      for line in lines:
          proj.append(line[0])
 
 z = list()
-with open("/data2/yucenl/default-branch.csv") as branch_list:
+with open("default-branch.csv") as branch_list:
      lines = csv.reader(branch_list, delimiter=',')
      for line in lines:
          z.append((line[0], line[1]))
 
 z = zip(proj, z)
 
-read_dest_folder = "/data2/yucenl/files/readmes"
-con_dest_folder = "/data2/yucenl/files/contribs"
+read_dest_folder = "files/readmes"
+con_dest_folder = "files/contribs"
 
 con_name = ["CONTRIBUTING", "Contributing", "contributing"]
 con_ext = ["", ".md", ".rdoc", ".markdown"]

@@ -1,13 +1,13 @@
 import pandas as pd
 from datetime import datetime
 
-df = pd.read_csv("../csv/issues/issueonly/issues.csv", delimiter=",,,,")
+df = pd.read_csv("issues.csv", delimiter=",,,,")
 df_id = df.groupby('repo_id')
 
-cdf = pd.read_csv("/ssd1/lily/comments.csv", delimiter=",:,:")
+cdf = pd.read_csv("comments.csv", delimiter=",:,:")
 
-with open("/ssd1/lily/resp/summary_resp1.csv", 'w') as s:
-    with open("/ssd1/lily/resp/comment_resp1.csv", 'w') as f:
+with open("resp/summary_resp1.csv", 'w') as s:
+    with open("resp/comment_resp1.csv", 'w') as f:
         for (repo_id, repo) in df_id:
             print(repo_id)
             times = list()

@@ -21,34 +21,14 @@ import numpy as np
 import sys
 import json
 from csv import reader, writer
-# from unicodeManager import UnicodeReader, UnicodeWriter
 import hashlib
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from travisDB import repo_decoder #, Base, initDB cleanStart,
-# from travisDB import TravisRepo #, TravisCommit, TravisJob, TravisBuild, GhIssue
 from dateutil import parser
 
 import random
 import numpy as np
-
-# tokens = Tokens()
-# tokens_iter = tokens.iterator()
-#
-# for token in tokens_iter:
-#     g = Github(token)
-#     try:
-#         repo = g.get_repo("CMUSTRUDEL/cmustrudel.github.io")
-#         print(token)
-#         print('\t' + repo.has_issues)
-#         print('\t' + g.rate_limiting)
-#     except RateLimitExceededException:
-#         print(token)
-#         print('\t' + "API rate limit exceeded")
-#
-# exit()
-
 
 class NoDaemonProcess(multiprocessing.Process):
     # make 'daemon' attribute always return False
@@ -63,9 +43,6 @@ class NoDaemonProcess(multiprocessing.Process):
 
 class MyPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
-
-
-# token = tokens[0]
 
 tokens = Tokens()
 tokens_iter = tokens.iterator()
@@ -111,33 +88,18 @@ def parseIssue(g, issue):
 
     created_by = issue.user  # NamedUser
     created_by_login = None
-    #     created_by_name = None
-    #     created_by_email = None
     if created_by is not None:
-        #         created_by = g.get_user(issue.user.login)
         created_by_login = created_by.login
-    #         created_by_name = created_by.name
-    #         created_by_email = created_by.email
 
     closed_by = issue.closed_by  # NamedUser
     closed_by_login = None
-    #     closed_by_name = None
-    #     closed_by_email = None
     if closed_by is not None:
-        #         closed_by = g.get_user(issue.closed_by.login) # NamedUser
         closed_by_login = closed_by.login
-    #         closed_by_name = closed_by.name
-    #         closed_by_email = closed_by.email
 
     assignee = issue.assignee  # NamedUser
     assignee_login = None
-    #     assignee_name = None
-    #     assignee_email = None
     if assignee is not None:
-        #         assignee = g.get_user(issue.assignee.login) # NamedUser
         assignee_login = assignee.login
-    #         assignee_name = assignee.name
-    #         assignee_email = assignee.email
 
     title = issue.title.strip().replace("\n", "").replace("\r", "")  # string
     body = issue.body  # string
@@ -164,14 +126,8 @@ def parseIssue(g, issue):
                  created_at,
                  closed_at,
                  created_by_login,
-                 # created_by_name,
-                 # created_by_email,
                  closed_by_login,
-                 # closed_by_name,
-                 # closed_by_email,
                  assignee_login,
-                 # assignee_name,
-                 # assignee_email,
                  title,
                  body,
                  num_comments,
@@ -181,7 +137,6 @@ def parseIssue(g, issue):
     waitIfDepleted(g)
 
     return issueData
-
 
 def parseComment(g, comment):
     comment_id = comment.id  # int
@@ -202,7 +157,6 @@ def parseComment(g, comment):
     waitIfDepleted(g)
 
     return commentData
-
 
 def dec(g, func):
     while True:
@@ -274,12 +228,12 @@ def initializer():
     token = tokens_queue.get()
     pid = current_process().pid
     tokens_map[pid] = token
-    files[pid] = '/ssd1/lily/comments.' + str(pid) + '.csv'
-    proc[pid] = '/ssd1/lily/comments.' + str(pid) + '.txt'
+    files[pid] = 'comments.' + str(pid) + '.csv'
+    proc[pid] = 'comments.' + str(pid) + '.txt'
 
 
 proj = list()
-with open("/data2/yucenl/active.csv") as proj_list:
+with open("active.csv") as proj_list:
     lines = csv.reader(proj_list, delimiter=',')
     for line in lines:
         proj.append((int(line[1]), line[0]))
@@ -294,8 +248,6 @@ for result in pool.imap_unordered(fetchIssues, proj):
     with open(proc[pid], 'a') as f:
         f.write("Processing: " + slug + "\n")
 
-    # slug = repo.slug
-    # repo_id = repo.id
     if err is not None:
         logwriter.write(slug + "," + err + "\n")
     else:

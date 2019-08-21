@@ -1,3 +1,6 @@
+# mines the default branches of the projects
+# some projects don't use master as their default branch
+
 from github import Github
 import github.GithubObject
 from myTokens import Tokens
