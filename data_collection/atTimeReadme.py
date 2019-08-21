@@ -1,3 +1,5 @@
+# This file tries to get the projects' README on 2018-06-01
+
 from github import Github
 import github.GithubObject
 from myTokens import Tokens
@@ -11,7 +13,9 @@ import datetime
 class Project:
     def __init__(self, id):
         self.id = id
-        db = MySQLdb.connect(host="localhost",user="anita",passwd="github",db="ghtorrent")
+        user = "user"
+        passwd = "passwd"
+        db = MySQLdb.connect(host="localhost",user=user ,passwd=passwd,db="ghtorrent")
         cursor = db.cursor()
         cursor.execute("select url,language from projects where id=%d"%\
         self.id)
