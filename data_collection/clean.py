@@ -1,3 +1,5 @@
+# cleans up the README file
+
 import os
 import re
 import glob
@@ -52,7 +54,7 @@ def style(line):
         return style(re.sub(r'((\*|_|~)+)([^\1])*\1', stylerepl, line))
     return line
 
-for file in glob.glob("/data2/yucenl/files/readmes/*"):
+for file in glob.glob("files/readmes/*"):
 #with open('/data2/yucenl/files/readmes/13921166$nknapp_html5-media-converter') as f:
     #file = '/data2/yucenl/files/readmes/13921166$nknapp_html5-media-converter'
     clean_file = re.sub(r'/readmes/', '/readmes_clean/', file)
