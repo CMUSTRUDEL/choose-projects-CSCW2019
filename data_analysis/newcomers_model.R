@@ -116,7 +116,7 @@ summary(m_new)
 
 vif(m_new) # done without interaction terms
 pR2(m_new)
-anova(m_new)
+Anova(m_new)
 
 interplot(m_new, "has_badgesTRUE", "log_recent_commits") +
   xlab("Num recent commits (log)") +
